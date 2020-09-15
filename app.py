@@ -19,7 +19,8 @@ class Hello(Resource):
 
 api.add_resource(Hello, '/hi')
 api.add_resource(cartoon, '/cartoonify')
-api.add_resource(sketch, '/sketch')
+api.add_resource(sketch, '/sketch', endpoint='sketch')
+api.add_resource(sketch, '/negative', endpoint='negative')
 
 # @app.route('/')
 # def hello_world():

@@ -3,6 +3,7 @@ from flask_restful import Resource
 import cv2
 import numpy as np
 import base64
+import re
 
 
 class sketch(Resource):
@@ -22,6 +23,9 @@ class sketch(Resource):
         # Negative of image
         img_neg = 255 - gray
 
+        if re.match('/negative', request.path):
+            return sketch.encoding(img_neg)
+
         # Blur image
         img_blur = cv2.GaussianBlur(img_neg, ksize=(21, 21), sigmaX=0, sigmaY=0)
 
@@ -31,6 +35,13 @@ class sketch(Resource):
         # cv2.imwrite("C:\\Users\\divya\\Downloads\\baby.jpeg", cartoon)
 
         # converting back to base64
-        img_encode = cv2.imencode('.jpg', img_blend)[1]
+        # img_encode = cv2.imencode('.jpg', img_blend)[1]
+        # images64 = base64.b64encode(img_encode).decode('utf-8')
+        return sketch.encoding(img_blend)
+
+    @classmethod
+    def encoding(self, img):
+        img_encode = cv2.imencode('.jpg', img)[1]
         images64 = base64.b64encode(img_encode).decode('utf-8')
         return jsonify({"data": images64})
+
