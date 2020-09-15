@@ -5,7 +5,7 @@ import numpy as np
 import base64
 
 
-class cartoon(Resource):
+class sketch(Resource):
     def post(self):
         # Get json data from request
         req = request.json
@@ -16,18 +16,21 @@ class cartoon(Resource):
         # decoded image
         img = cv2.imdecode(nparray, cv2.IMREAD_COLOR)
 
-        # Edges
+        # Gray scale image
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-        gray = cv2.medianBlur(gray, 5)
-        edges = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, 9, 9)
 
-        # cartoonization
-        color = cv2.bilateralFilter(img, 9, 250, 250)
-        cartoon = cv2.bitwise_and(color, color, mask=edges)
+        # Negative of image
+        img_neg = 255 - gray
+
+        # Blur image
+        img_blur = cv2.GaussianBlur(img_neg, ksize=(21, 21), sigmaX=0, sigmaY=0)
+
+        # Blend image
+        img_blend = cv2.divide(gray, 255 - img_blur, scale=256)
 
         # cv2.imwrite("C:\\Users\\divya\\Downloads\\baby.jpeg", cartoon)
 
         # converting back to base64
-        img_encode = cv2.imencode('.jpg', cartoon)[1]
+        img_encode = cv2.imencode('.jpg', img_blend)[1]
         images64 = base64.b64encode(img_encode).decode('utf-8')
         return jsonify({"data": images64})

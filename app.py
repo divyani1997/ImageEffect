@@ -1,6 +1,7 @@
 from flask import Flask, jsonify, request
 from flask_restful import Resource, Api
 from Cartoon import cartoon
+from Skecth import sketch
 
 app = Flask(__name__)
 
@@ -18,6 +19,7 @@ class Hello(Resource):
 
 api.add_resource(Hello, '/hi')
 api.add_resource(cartoon, '/cartoonify')
+api.add_resource(sketch, '/sketch')
 
 # @app.route('/')
 # def hello_world():
